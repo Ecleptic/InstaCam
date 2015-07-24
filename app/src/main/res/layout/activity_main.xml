@@ -1,17 +1,47 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                tools:context=".MainActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/button"
-        android:text="SEND"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:elevation="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-</RelativeLayout>
+    <it.neokree.materialtabs.MaterialTabHost
+        android:id="@+id/tab_bar"
+        android:elevation="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:accentColor="@color/accent"
+        app:primaryColor="@color/primary"
+        app:hasIcons="true"
+        app:textColor="#FFFFFF"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <FrameLayout
+        android:id="@+id/feed_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+        <ImageButton
+            android:id="@+id/camera_fab"
+            android:src="@drawable/ic_camera"
+            android:elevation="8dp"
+            android:layout_margin="@dimen/vertical_small_margin"
+            android:background="@drawable/fab"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"/>
+    </RelativeLayout>
+
+</LinearLayout>

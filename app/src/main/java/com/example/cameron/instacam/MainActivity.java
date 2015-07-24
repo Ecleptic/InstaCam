@@ -1,56 +1,120 @@
 package com.example.cameron.instacam;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import java.io.File;
 import java.net.URI;
 
+import it.neokree.materialtabs.MaterialTab;
+import it.neokree.materialtabs.MaterialTabHost;
+import it.neokree.materialtabs.MaterialTabListener;
 
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends ActionBarActivity implements MaterialTabListener{
 
     private static final int CAMERA_REQUEST = 10;
     private static final String TAG = "MainActivity";
-    private File mPhoto;
+    private Photo mPhoto;
+    private FeedFragment mFeedFragment;
+    private MaterialTabHost mTabBar;
+    private ProfileFragment mProfileFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button = (Button)findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        mFeedFragment = (FeedFragment) getFragmentManager().findFragmentById(R.id.feed_container);
+        if (mFeedFragment == null){
+            mFeedFragment = new FeedFragment();
 
-                File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                mPhoto = new File(directory, "sample.jpeg");
-                i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhoto));
-                startActivityForResult(i, CAMERA_REQUEST);
-            }
-        });
+            ImageButton cameraFab = (ImageButton)findViewById(R.id.camera_fab);
+            cameraFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    mPhoto = new Photo();
 
+                    i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhoto.getFile()));
+
+                    startActivityForResult(i, CAMERA_REQUEST);
+                }
+            });
+
+            Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+
+            mTabBar = (MaterialTabHost)findViewById(R.id.tab_bar);
+            mTabBar.addTab(mTabBar.newTab().setIcon(getResources().getDrawable(R.drawable.ic_home)).setTabListener(this));
+            mTabBar.addTab(mTabBar.newTab().setIcon(getResources().getDrawable(R.drawable.ic_profile)).setTabListener(this));
+
+            getFragmentManager().beginTransaction()
+                    .add(R.id.feed_container, mFeedFragment)
+                    .commit();
+        }
 
     }
+
+
+
+    @Override
+    public void onTabReselected(MaterialTab materialTab) {
+
+    }
+
+
+
+    @Override
+    public void onTabSelected(MaterialTab materialTab) {
+        int position = materialTab.getPosition();
+    mTabBar.setSelectedNavigationItem(position);
+
+        Fragment fragment = null;
+        switch (position){
+            case 0:
+                fragment = mFeedFragment;
+                break;
+
+            case 1:
+                if (mProfileFragment == null){
+                    mProfileFragment = new ProfileFragment();
+                }
+                fragment = mProfileFragment;
+                break;
+        }
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.feed_container, fragment)
+                .commit();
+    }
+
+    @Override
+    public void onTabUnselected(MaterialTab materialTab) {
+
+    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST){
             if (resultCode == RESULT_OK){
-                Log.d(TAG, "We took a picture");
-
                 Intent i = new Intent (Intent.ACTION_VIEW);
-                i.setDataAndType(Uri.fromFile(mPhoto),"image/jpeg");
+                i.setDataAndType(Uri.fromFile(mPhoto.getFile()),"image/jpeg");
 
                 startActivity(i);
 
